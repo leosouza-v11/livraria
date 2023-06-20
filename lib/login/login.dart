@@ -135,7 +135,7 @@ class _LoginState extends State<Login> {
                       },
                       child: const Text(
                         'Esqueci minha senha',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, color: Colors.lightBlue),
                       ),
                     ),
                   ],
@@ -143,9 +143,10 @@ class _LoginState extends State<Login> {
 
                 const SizedBox(height: 30), //Espaçamento
 
-                //Botão Entrar
+                //Botão Login
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightBlue,
                       minimumSize:
                           Size(MediaQuery.of(context).size.width * 0.40, 45)),
                   onPressed: () {
@@ -181,7 +182,7 @@ class _LoginState extends State<Login> {
                   },
                   child: const Text(
                     'Não tem cadastro? Clique aqui',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: Colors.lightBlue),
                   ),
                 ),
               ],

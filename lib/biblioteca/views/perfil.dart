@@ -200,6 +200,7 @@ class _PerfilState extends State<Perfil> {
                 //Botão Salvar
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightBlue,
                       minimumSize:
                           Size(MediaQuery.of(context).size.width * 0.40, 45)),
                   onPressed: () {
@@ -220,6 +221,7 @@ class _PerfilState extends State<Perfil> {
                 //Botão Alterar Senha
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightBlue,
                       minimumSize:
                           Size(MediaQuery.of(context).size.width * 0.40, 45)),
                   onPressed: () {

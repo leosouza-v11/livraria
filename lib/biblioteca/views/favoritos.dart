@@ -16,21 +16,23 @@ class _FavoritosState extends State<Favoritos> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(212, 242, 246, 1),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        //Grid com os livros
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 300,
+              childAspectRatio: 3 / 4,
+              crossAxisSpacing: 1,
+              mainAxisSpacing: 1),
 
-      //Grid com os livros
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 300,
-            childAspectRatio: 3 / 4,
-            crossAxisSpacing: 1,
-            mainAxisSpacing: 1),
+          //Roda o "for" a quantidade de livros na lista
+          itemCount: livros.length,
 
-        //Roda o "for" a quantidade de livros na lista
-        itemCount: livros.length,
-
-        //chama a lista toda, um por vez (como num for) e coloca em algo (Card)
-        itemBuilder: (context, index) => LivroCard(
-          livro: livros[index],
+          //chama a lista toda, um por vez (como num for) e coloca em algo (Card)
+          itemBuilder: (context, index) => LivroCard(
+            livro: livros[index],
+          ),
         ),
       ),
     );

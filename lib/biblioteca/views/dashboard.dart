@@ -18,15 +18,16 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(212, 242, 246, 1),
       appBar: AppBar(
+        backgroundColor: Colors.lightBlue,
         automaticallyImplyLeading: false, //Remove o "voltar"
         title: const SizedBox(
           width: 300,
           height: 40,
           child: TextField(
             decoration: InputDecoration(
-              //Backgroud
+              //Backgroud do campo de pesquisa
               filled: true,
-              fillColor: Color.fromRGBO(212, 242, 246, 1),
+              fillColor: Color.fromRGBO(255, 255, 255, 1),
 
               //Texto dentro do campo
               hintText: ' Pesquisar',
@@ -66,21 +67,23 @@ class _DashboardState extends State<Dashboard> {
           ),
         ],
       ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        //Grid com os livros
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, //Quantidade de itens lado a lado
+            crossAxisSpacing: 4, //Espaçamento lateral
+            mainAxisSpacing: 4, //Espaçamento vertical
+          ),
 
-      //Grid com os livros
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 300,
-            childAspectRatio: 3 / 4,
-            crossAxisSpacing: 1,
-            mainAxisSpacing: 1),
+          //A quantidade de livros na lista é o tamanho do "for"
+          itemCount: livros.length,
 
-        //Roda o "for" a quantidade de livros na lista
-        itemCount: livros.length,
-
-        //chama a lista toda, um por vez (como num for) e coloca em algo (Card)
-        itemBuilder: (context, index) => LivroCard(
-          livro: livros[index],
+          //chama a lista toda, um por vez (como num for) e coloca em algo (Card)
+          itemBuilder: (context, index) => LivroCard(
+            livro: livros[index],
+          ),
         ),
       ),
     );

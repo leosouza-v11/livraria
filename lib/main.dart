@@ -17,7 +17,10 @@ class LivrariaApp extends StatelessWidget {
     return MaterialApp(
       title: 'App Livraria',
       debugShowCheckedModeBanner: false, //Tira a tarja "Debug"
-      theme: ThemeData(primarySwatch: Colors.lightBlue),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.lightBlue,
+      ),
       initialRoute: '/', //Rota inicial
       routes: {
         '/': (context) => const Login(),
