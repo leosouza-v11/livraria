@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:livraria/model/classes/usuario.dart';
+import 'package:livraria/model/usuario_dao.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Cadastro extends StatefulWidget {
   const Cadastro({super.key});
@@ -50,7 +53,34 @@ class _CadastroState extends State<Cadastro> {
     });
   }
 
-  cadastradoComSucesso(BuildContext context) {
+  //Cadastrar usuário
+  Future<void> _cadastrarUsuario() async {
+    var usuario = Usuario(
+      nome: _nomeController.text,
+      email: _emailController.text,
+      telefone: _telefoneController.text,
+      senha: _senhaController.text,
+    );
+
+    //Inserir no banco de dados
+    int novoID = await UsuarioDAO.inserir(usuario);
+
+    //Crio uma "sessão" e atribuo o id nela.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('id_usuario', novoID);
+
+    debugPrint(
+        '##############################################################');
+    debugPrint('Usuario inserido com id: $novoID'); //Printa no debug
+    debugPrint(
+        '##############################################################');
+
+    //Exibir Alerta
+    cadastradoComSucesso(novoID);
+  }
+
+  //Alerta de "Cadastrado com Sucesso"
+  cadastradoComSucesso(novoID) {
     //Botão OK
     Widget btConfirmar = TextButton(
       child: const Text('OK', style: TextStyle(fontSize: 18)),
@@ -60,10 +90,7 @@ class _CadastroState extends State<Cadastro> {
           context,
           '/biblioteca',
           arguments: {
-            'nome': _nomeController.text,
-            'email': _emailController.text,
-            'telefone': _telefoneController,
-            'senha': _senhaController.text
+            'id': novoID,
           },
         );
       },
@@ -299,14 +326,13 @@ class _CadastroState extends State<Cadastro> {
 
                 const SizedBox(height: 24), //Espaçamento
 
-                //Botão Entrar
+                //Botão Cadastrar
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightBlue,
                       minimumSize:
                           Size(MediaQuery.of(context).size.width * 0.40, 45)),
-                  onPressed: () {
-                    cadastradoComSucesso(context);
-                  },
+                  onPressed: () => _cadastrarUsuario(),
                   child: const Text(
                     'Cadastrar',
                     style: TextStyle(

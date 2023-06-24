@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:livraria/biblioteca/classes/livro.dart';
+import 'package:livraria/model/classes/livro.dart';
 import 'package:livraria/biblioteca/widgets/livro_widget.dart';
 
 class LivroCard extends StatelessWidget {
@@ -34,7 +34,7 @@ class LivroCard extends StatelessWidget {
                 ),
               ),
               Image(
-                width: 90,
+                width: 85,
                 image: AssetImage(livro.capa),
               ),
             ],

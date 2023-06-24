@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:livraria/biblioteca/classes/livro.dart';
+import 'package:livraria/model/classes/livro.dart';
 
 class LivroWidget extends StatefulWidget {
   const LivroWidget({super.key, required this.livro});

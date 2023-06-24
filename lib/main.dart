@@ -4,9 +4,19 @@ import 'package:livraria/biblioteca/widgets/alterar_senha.dart';
 import 'package:livraria/login/login.dart';
 import 'package:livraria/login/widgets/cadastro.dart';
 import 'package:livraria/login/widgets/esqueceu_senha.dart';
+import 'package:livraria/model/classes/usuario.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const LivrariaApp());
+  runApp(
+    //Usando o provider é possível avisar toda Livraria quando houver
+    //mudanças na classe Usuário
+    ChangeNotifierProvider(
+      create: (context) =>
+          Usuario(nome: '', email: '', telefone: '', senha: ''),
+      child: const LivrariaApp(),
+    ),
+  );
 }
 
 class LivrariaApp extends StatelessWidget {

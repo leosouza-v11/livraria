@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:livraria/biblioteca/classes/livro.dart';
+import 'package:livraria/model/classes/livro.dart';
 import 'package:livraria/biblioteca/widgets/livro_card.dart';
 
 class Dashboard extends StatefulWidget {

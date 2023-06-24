@@ -98,6 +98,7 @@ class _EsqueceuSenhaState extends State<EsqueceuSenha> {
                 //Botão Redefinir Senha
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightBlue,
                       minimumSize:
                           Size(MediaQuery.of(context).size.width * 0.40, 45)),
                   onPressed: () {

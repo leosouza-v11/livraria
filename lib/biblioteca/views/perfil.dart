@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:livraria/model/classes/usuario.dart';
+import 'package:livraria/model/usuario_dao.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Perfil extends StatefulWidget {
   const Perfil({super.key});
@@ -8,8 +11,12 @@ class Perfil extends StatefulWidget {
 }
 
 class _PerfilState extends State<Perfil> {
+  Usuario _usuario = Usuario(nome: '', email: '', telefone: '', senha: '');
+
+  int _idUsuario = 0; //Inicia em 0
+
   //Campos Perfil
-  late final TextEditingController _nomeController;
+  late TextEditingController _nomeController;
   late final TextEditingController _emailController;
   late final TextEditingController _telefoneController;
   late final TextEditingController _senhaController;
@@ -21,6 +28,7 @@ class _PerfilState extends State<Perfil> {
     _telefoneController = TextEditingController();
     _senhaController = TextEditingController();
     super.initState();
+    _recuperaID(); //Altera o ID
   }
 
   @override
@@ -32,8 +40,26 @@ class _PerfilState extends State<Perfil> {
     super.dispose();
   }
 
+  Future<void> _recuperaID() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _idUsuario = prefs.getInt('id_usuario') as int;
+    });
+  }
+
+  Future<void> _recuperaUsuario() async {
+    List<Usuario> usuarios = await UsuarioDAO.carregarUsuario(_idUsuario);
+
+    setState(() {
+      _usuario = usuarios[0];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    //Recupera o usuário do banco para usar nos campos
+    _recuperaUsuario();
+
     return Scaffold(
       backgroundColor: const Color.fromRGBO(212, 242, 246, 1),
       body: SingleChildScrollView(
@@ -62,7 +88,7 @@ class _PerfilState extends State<Perfil> {
                       'Nome Completo',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
-                    hintText: '${_nomeController.text = 'Christian'}',
+                    hintText: _nomeController.text = _usuario.nome,
 
                     //Borda antes de clicar
                     enabledBorder: const OutlineInputBorder(
@@ -97,8 +123,7 @@ class _PerfilState extends State<Perfil> {
                       'Email',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
-                    hintText:
-                        '${_emailController.text = 'christian@hotmail.com'}',
+                    hintText: _emailController.text = _usuario.email,
 
                     //Borda antes de clicar
                     enabledBorder: const OutlineInputBorder(
@@ -133,7 +158,7 @@ class _PerfilState extends State<Perfil> {
                       'Telefone',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
-                    hintText: '${_telefoneController.text = '(15) 99624-9955'}',
+                    hintText: _telefoneController.text = _usuario.telefone,
 
                     //Borda antes de clicar
                     enabledBorder: const OutlineInputBorder(
@@ -170,7 +195,7 @@ class _PerfilState extends State<Perfil> {
                       'Senha',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
-                    hintText: '${_senhaController.text = '123456'}',
+                    hintText: _senhaController.text = _usuario.senha,
 
                     //Borda antes de clicar
                     enabledBorder: const OutlineInputBorder(
