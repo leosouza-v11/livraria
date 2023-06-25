@@ -12,14 +12,14 @@ class Perfil extends StatefulWidget {
 
 class _PerfilState extends State<Perfil> {
   Usuario _usuario = Usuario(nome: '', email: '', telefone: '', senha: '');
-
   int _idUsuario = 0; //Inicia em 0
+  bool _perfilAtualizado = false;
 
   //Campos Perfil
   late TextEditingController _nomeController;
-  late final TextEditingController _emailController;
-  late final TextEditingController _telefoneController;
-  late final TextEditingController _senhaController;
+  late TextEditingController _emailController;
+  late TextEditingController _telefoneController;
+  late TextEditingController _senhaController;
 
   @override
   void initState() {
@@ -27,8 +27,9 @@ class _PerfilState extends State<Perfil> {
     _emailController = TextEditingController();
     _telefoneController = TextEditingController();
     _senhaController = TextEditingController();
-    super.initState();
     _recuperaID(); //Altera o ID
+
+    super.initState();
   }
 
   @override
@@ -37,6 +38,7 @@ class _PerfilState extends State<Perfil> {
     _emailController.dispose();
     _telefoneController.dispose();
     _senhaController.dispose();
+
     super.dispose();
   }
 
@@ -47,18 +49,85 @@ class _PerfilState extends State<Perfil> {
     });
   }
 
-  Future<void> _recuperaUsuario() async {
+  //Recupera o usuário do banco para usar nos campos
+  Future<void> recuperaUsuario() async {
     List<Usuario> usuarios = await UsuarioDAO.carregarUsuario(_idUsuario);
 
     setState(() {
       _usuario = usuarios[0];
+      atribuiValorCampos();
+      _perfilAtualizado = true;
     });
+  }
+
+  //Atualiza o usuário no banco de dados
+  Future<void> atualizaUsuario() async {
+    //Atualiza as informações dos campos
+    setState(() {
+      _nomeController;
+      _emailController;
+      _telefoneController;
+    });
+
+    //Coloca as novas informações do usuário
+    _usuario = Usuario(
+      id: _idUsuario,
+      nome: _nomeController.text,
+      email: _emailController.text,
+      telefone: _telefoneController.text,
+      senha: _senhaController.text,
+    );
+
+    //Atualiza o usuário no banco
+    await UsuarioDAO.atualizarUsuario(_usuario);
+
+    setState(() {
+      _perfilAtualizado = false;
+    });
+
+    //Exibe o alerta
+    perfilAtualizado();
+  }
+
+  void atribuiValorCampos() {
+    _nomeController.text = _usuario.nome;
+    _emailController.text = _usuario.email;
+    _telefoneController.text = _usuario.telefone;
+    _senhaController.text = _usuario.senha;
+  }
+
+  //Alerta de "Perfil Atualizado"
+  perfilAtualizado() {
+    //Botão OK
+    Widget btConfirmar = TextButton(
+      child: const Text('OK', style: TextStyle(fontSize: 18)),
+      onPressed: () {
+        //Rota para onde vai
+        Navigator.pop(context);
+      },
+    );
+
+    //Configura o Alerta
+    AlertDialog alerta = AlertDialog(
+      title: const Text('Perfil Atualizado!'),
+      actions: [btConfirmar],
+    );
+
+    //Exibir o diálogo
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alerta;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    //Recupera o usuário do banco para usar nos campos
-    _recuperaUsuario();
+    //Atualiza informações do Perfil
+    if (_perfilAtualizado == false) {
+      recuperaUsuario();
+    }
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(212, 242, 246, 1),
@@ -88,7 +157,7 @@ class _PerfilState extends State<Perfil> {
                       'Nome Completo',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
-                    hintText: _nomeController.text = _usuario.nome,
+                    hintText: _nomeController.text,
 
                     //Borda antes de clicar
                     enabledBorder: const OutlineInputBorder(
@@ -110,6 +179,12 @@ class _PerfilState extends State<Perfil> {
 
                     //Ícone antes do texto
                     prefixIcon: const Icon(Icons.person),
+                    /*
+                    //Ícone depois do texto
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: limpaCampo,
+                    ),*/
                   ),
                 ),
 
@@ -123,7 +198,7 @@ class _PerfilState extends State<Perfil> {
                       'Email',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
-                    hintText: _emailController.text = _usuario.email,
+                    hintText: _emailController.text,
 
                     //Borda antes de clicar
                     enabledBorder: const OutlineInputBorder(
@@ -158,7 +233,7 @@ class _PerfilState extends State<Perfil> {
                       'Telefone',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
-                    hintText: _telefoneController.text = _usuario.telefone,
+                    hintText: _telefoneController.text,
 
                     //Borda antes de clicar
                     enabledBorder: const OutlineInputBorder(
@@ -183,44 +258,7 @@ class _PerfilState extends State<Perfil> {
                   ),
                 ),
 
-                const SizedBox(height: 16), //Espaçamento
-
-                //Campo Senha
-                TextField(
-                  readOnly: true, //Somente Visualização
-                  controller: _senhaController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    label: const Text(
-                      'Senha',
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                    hintText: _senhaController.text = _usuario.senha,
-
-                    //Borda antes de clicar
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-
-                    //Borda depois de clicar
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: Colors.lightBlue,
-                        style: BorderStyle.solid,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-
-                    //Ícone antes do texto
-                    prefixIcon: const Icon(Icons.lock_outline),
-                  ),
-                ),
-
-                const SizedBox(height: 24), //Espaçamento
+                const SizedBox(height: 32), //Espaçamento
 
                 //Botão Salvar
                 ElevatedButton(
@@ -228,9 +266,7 @@ class _PerfilState extends State<Perfil> {
                       backgroundColor: Colors.lightBlue,
                       minimumSize:
                           Size(MediaQuery.of(context).size.width * 0.40, 45)),
-                  onPressed: () {
-                    //cadastradoComSucesso(context);
-                  },
+                  onPressed: atualizaUsuario,
                   child: const Text(
                     'Salvar',
                     style: TextStyle(

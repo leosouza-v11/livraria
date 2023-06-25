@@ -69,18 +69,12 @@ class _CadastroState extends State<Cadastro> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('id_usuario', novoID);
 
-    debugPrint(
-        '##############################################################');
-    debugPrint('Usuario inserido com id: $novoID'); //Printa no debug
-    debugPrint(
-        '##############################################################');
-
     //Exibir Alerta
-    cadastradoComSucesso(novoID);
+    cadastradoComSucesso();
   }
 
   //Alerta de "Cadastrado com Sucesso"
-  cadastradoComSucesso(novoID) {
+  cadastradoComSucesso() {
     //Botão OK
     Widget btConfirmar = TextButton(
       child: const Text('OK', style: TextStyle(fontSize: 18)),
@@ -89,9 +83,6 @@ class _CadastroState extends State<Cadastro> {
         Navigator.pushNamed(
           context,
           '/biblioteca',
-          arguments: {
-            'id': novoID,
-          },
         );
       },
     );

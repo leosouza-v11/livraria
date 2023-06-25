@@ -17,6 +17,7 @@ class UsuarioDAO {
   }
 
   //SELECT
+  //Verifica por ID
   static Future<List<Usuario>> carregarUsuario(int id) async {
     //Chama o Banco de Dados
     var db = await DBLivraria.getInstance();
@@ -31,14 +32,28 @@ class UsuarioDAO {
     return usuario;
   }
 
+  //Verifica por Email
+  static Future<List<Usuario>> verificacaoLogin(String email) async {
+    //Chama o Banco de Dados
+    var db = await DBLivraria.getInstance();
+
+    //await porque retorna um Future de Map
+    List<Map<String, Object?>> resultado =
+        await db.query('usuario', where: 'email=?', whereArgs: [email]);
+
+    List<Usuario> usuario =
+        resultado.map((mapUsuario) => Usuario.fromMap(mapUsuario)).toList();
+
+    return usuario;
+  }
+
   //UPDATE
-  static Future<void> atualizarUsuario(Usuario usuario) async {
+  static Future<void> atualizarUsuario(usuario) async {
     //Chama o Banco de Dados
     var db = await DBLivraria.getInstance();
 
     await db.update('usuario', usuario.toMap(),
-        where: 'nome=?, email=?, telefone=?',
-        whereArgs: [usuario.nome, usuario.email, usuario.telefone]);
+        where: 'id=?', whereArgs: [usuario.id]);
   }
 
   //DELET

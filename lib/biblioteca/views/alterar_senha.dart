@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:livraria/model/classes/usuario.dart';
+import 'package:livraria/model/usuario_dao.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AlterarSenha extends StatefulWidget {
   const AlterarSenha({super.key});
@@ -17,6 +20,31 @@ class _AlterarSenhaState extends State<AlterarSenha> {
   bool _senhaAtualEscondida = true;
   bool _novaSenhaEscondida = true;
   bool _confirmarNovaSenhaEscondida = true;
+
+  //Comparação das senhas
+  late bool _senhaAtual = false;
+  late bool _senhasIguais = false;
+
+  //Usuário
+  Usuario _usuario = Usuario(nome: '', email: '', telefone: '', senha: '');
+  int _idUsuario = 0; //Inicia em 0
+
+  @override
+  void initState() {
+    super.initState();
+    _senhaAtualController = TextEditingController();
+    _novaSenhaController = TextEditingController();
+    _confirmarNovaSenhaController = TextEditingController();
+    recuperaID();
+  }
+
+  @override
+  void dispose() {
+    _senhaAtualController.dispose();
+    _novaSenhaController.dispose();
+    _confirmarNovaSenhaController.dispose();
+    super.dispose();
+  }
 
   //Mostrar ou Esconder Senha Atual
   void _visibilidadeSenhaAtual() {
@@ -39,31 +67,14 @@ class _AlterarSenhaState extends State<AlterarSenha> {
     });
   }
 
-  @override
-  void initState() {
-    _senhaAtualController = TextEditingController();
-    _novaSenhaController = TextEditingController();
-    _confirmarNovaSenhaController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _senhaAtualController.dispose();
-    _novaSenhaController.dispose();
-    _confirmarNovaSenhaController.dispose();
-    super.dispose();
-  }
-
   //Função que altera a senha
   _alterarSenha(BuildContext context) {
     //Verifica se senhas são iguais
     verificarSenhas();
 
     if (_senhaAtual == true && _senhasIguais == true) {
-      //
-      //  código de update no banco
-      //
+      //Atualiza as informações no banco
+      atualizaUsuario();
 
       //Botão OK
       Widget btConfirmar = TextButton(
@@ -76,8 +87,8 @@ class _AlterarSenhaState extends State<AlterarSenha> {
 
       //Configura o Alerta
       AlertDialog alerta = AlertDialog(
-        //title: const Text('Senha Redefinida'),
-        content: const Text('Senha alterada com Sucesso!'),
+        title: const Text('Senha alterada com Sucesso!'),
+        //content: const Text('Senha alterada com Sucesso!'),
         actions: [btConfirmar],
       );
 
@@ -97,10 +108,10 @@ class _AlterarSenhaState extends State<AlterarSenha> {
         },
       );
 
-      //Configura o Alerta
+      //Configura o Alerta da Senha Atual
       AlertDialog alerta = AlertDialog(
-        //title: const Text('Senha Redefinida'),
-        content: const Text('Senha Atual Incorreta!'),
+        title: const Text('Não foi possível alterar'),
+        content: const Text('Senha atual incorreta!'),
         actions: [btConfirmar],
       );
 
@@ -120,10 +131,10 @@ class _AlterarSenhaState extends State<AlterarSenha> {
         },
       );
 
-      //Configura o Alerta
+      //Configura o Alerta da Nova Senha
       AlertDialog alerta = AlertDialog(
-        //title: const Text('Senha Redefinida'),
-        content: const Text('Senhas Diferentes!'),
+        title: const Text('Não foi possível alterar'),
+        content: const Text('Senhas diferentes!'),
         actions: [btConfirmar],
       );
 
@@ -135,21 +146,20 @@ class _AlterarSenhaState extends State<AlterarSenha> {
         },
       );
     }
+
+    //Volta para os valores iniciais
+    setState(() {
+      _senhaAtual = false;
+      _senhasIguais = false;
+    });
   }
 
-  //Verifica Senhas
-  late bool _senhasIguais;
-  late bool _senhaAtual;
-
+  //Compara as Senhas
   verificarSenhas() {
     //Verifica a senha atual
-    if (_senhaAtualController.text == '123') {
+    if (_senhaAtualController.text == _usuario.senha) {
       setState(() {
         _senhaAtual = true;
-      });
-    } else {
-      setState(() {
-        _senhaAtual = false;
       });
     }
 
@@ -160,15 +170,46 @@ class _AlterarSenhaState extends State<AlterarSenha> {
       setState(() {
         _senhasIguais = true;
       });
-    } else {
-      setState(() {
-        _senhasIguais = false;
-      });
     }
+  }
+
+  //Recupera o ID do usuário
+  Future<void> recuperaID() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _idUsuario = prefs.getInt('id_usuario') as int;
+    });
+  }
+
+  //Recupera o usuário do banco para usar nos campos
+  Future<void> recuperaUsuario() async {
+    List<Usuario> usuarios = await UsuarioDAO.carregarUsuario(_idUsuario);
+
+    setState(() {
+      _usuario = usuarios[0];
+    });
+  }
+
+  //Atualiza o usuário no banco de dados
+  Future<void> atualizaUsuario() async {
+    //Coloca as novas informações do usuário
+    _usuario = Usuario(
+      id: _idUsuario,
+      nome: _usuario.nome,
+      email: _usuario.email,
+      telefone: _usuario.telefone,
+      senha: _novaSenhaController.text,
+    );
+
+    //Atualiza o usuário no banco
+    await UsuarioDAO.atualizarUsuario(_usuario);
   }
 
   @override
   Widget build(BuildContext context) {
+    //Puxa as informações do usuário
+    recuperaUsuario();
+
     return Scaffold(
       extendBodyBehindAppBar: true, //Encosta o body no appBar
       backgroundColor: const Color.fromRGBO(212, 242, 246, 1),

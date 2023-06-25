@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:livraria/model/classes/usuario.dart';
+import 'package:livraria/model/usuario_dao.dart';
 //import 'package:livraria/core/processaDados.dart';
 
 class Login extends StatefulWidget {
@@ -9,15 +11,18 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  Usuario _usuario = Usuario(nome: '', email: '', telefone: '', senha: '');
+  //int _idUsuario = 0; //Inicia em 0
+
   //Campos Login
   late final TextEditingController _emailController;
   late final TextEditingController _senhaController;
 
   @override
   void initState() {
+    super.initState();
     _emailController = TextEditingController();
     _senhaController = TextEditingController();
-    super.initState();
   }
 
   @override
@@ -27,9 +32,14 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-  void _testarCampos() {
-    debugPrint('Email: ${_emailController.text}');
-    debugPrint('Senha: ${_senhaController.text}');
+  //Busca o usuário no banco para conferir se existe
+  Future<void> verificaUsuario() async {
+    List<Usuario> usuarios =
+        await UsuarioDAO.verificacaoLogin(_emailController.text);
+
+    setState(() {
+      _usuario = usuarios[0];
+    });
   }
 
   @override

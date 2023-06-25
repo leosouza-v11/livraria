@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:livraria/biblioteca/biblioteca.dart';
-import 'package:livraria/biblioteca/widgets/alterar_senha.dart';
+import 'package:livraria/biblioteca/views/alterar_senha.dart';
 import 'package:livraria/login/login.dart';
 import 'package:livraria/login/widgets/cadastro.dart';
 import 'package:livraria/login/widgets/esqueceu_senha.dart';
