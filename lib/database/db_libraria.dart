@@ -18,28 +18,26 @@ class DBLivraria {
   }
 
   static Future<void> _onCreate(Database db, int version) async {
-    debugPrint(' ************************* ');
     await db.execute(
         'CREATE TABLE usuario (id INTEGER PRIMARY KEY, nome TEXT, email TEXT, telefone TEXT, senha TEXT)');
+    await db.execute(
+      'CREATE TABLE livro (id_livro INTEGER PRIMARY KEY AUTO INCREMENT, fk_usuario INTEGER, FOREIGN KEY (fk_usuario) REFERENCES usuario (id))'
+    );
+    await db.execute(
+      'CREATE TABLE referencia (id INTEGER PRIMARY KEY AUTO INCREMENT, fk_logado INTEGER, fk_favorito INTEGER, FOREIGN KEY (fk_logado) REFERENCES usuario (id), FOREIGN KEY (fk_favorito) REFERENCES livro (id_livro))'
+    );
   }
 
   static Future<void> _onOpen(Database db) async {
-    var version = await db.getVersion();
-    debugPrint(
-        ' ************** Abrindo banco de dados. Versão: $version ************** ');
+    var version = await db.getVersion();                                              
   }
 
   static Future<void> _onUpgrade(
       Database db, int oldVersion, int newVersion) async {
-    // Executar scripts de alteração de banco de dados
-    debugPrint(
-        ' *********** Fazendo Upgrade da versão $oldVersion para a versão $newVersion *********** ');
-  }
+    // Executar scripts de alteração de banco de dados                                            
+  }                                                                                                                                                                                           
 
   static Future<void> _onDowngrade(
-      Database db, int oldVersion, int newVersion) async {
-    // Executar scripts de alteração de banco de dados
-    debugPrint(
-        ' *********** Fazendo Downgrade da versão $oldVersion para a versão $newVersion *********** ');
+      Database db, int oldVersion, int newVersion) async {                                                                                                                
   }
 }

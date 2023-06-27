@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:livraria/model/classes/livro.dart';
 import 'package:livraria/biblioteca/widgets/livro_card.dart';
+import 'package:livraria/database/db_libraria.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});

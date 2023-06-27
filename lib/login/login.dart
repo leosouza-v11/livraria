@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:livraria/model/classes/usuario.dart';
 import 'package:livraria/model/usuario_dao.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../database/db_libraria.dart';
 //import 'package:livraria/core/processaDados.dart';
 
 class Login extends StatefulWidget {
@@ -30,6 +33,44 @@ class _LoginState extends State<Login> {
     _emailController.dispose();
     _senhaController.dispose();
     super.dispose();
+  }
+
+  //verifica se o usuario existe
+  Future<bool> verificaEntrada(String name) async {
+    //Instancia o banco
+    var db = await DBLivraria.getInstance();
+    //faz a consulta com o email do usuario
+    final procurar = await db.rawQuery(
+      'SELECT * FROM usuario WHERE email = ?',
+      [_emailController],
+    );
+    //guarda um valor boleano de true se o usuario existir
+    final usuarioVer = procurar.isNotEmpty;
+    return usuarioVer;
+}
+
+  void proximaTela(String name)async {
+    //verifica se o usuario existe no banco
+    final pegarValor = await verificaEntrada(name);
+    //navega para a próxima tela se for true
+    if (pegarValor) {
+      Navigator.pushNamed(context, '/biblioteca');
+    //caso não exista, exibe uma mensagem
+    }else{
+      showDialog(
+        context: context, 
+        builder: (context) => AlertDialog(
+          title: Text('Usuario não encontrado'),
+          content: Text('O usuario não esta cadastrado.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), 
+              child: Text('Fechar'),
+              )
+          ],
+        ),);
+    }
+
   }
 
   //Busca o usuário no banco para conferir se existe
@@ -159,20 +200,20 @@ class _LoginState extends State<Login> {
                       backgroundColor: Colors.lightBlue,
                       minimumSize:
                           Size(MediaQuery.of(context).size.width * 0.40, 45)),
-                  onPressed: () {
+                  onPressed: proximaTela(_emailController)
                     //var email = _emailController.text;
                     //var senha = _senhaController.text;
                     //processaDadosLogin(email, senha);
                     //Rota para onde vai
-                    Navigator.pushNamed(
+                    /*Navigator.pushNamed(
                       context,
                       '/biblioteca',
                       arguments: {
                         'email': _emailController.text,
                         'senha': _senhaController.text
                       },
-                    );
-                  },
+                    );*/
+                  ,
                   child: const Text(
                     'Login',
                     style: TextStyle(
